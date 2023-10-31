@@ -1,0 +1,61 @@
+---
+- name: Install node and npm
+  hosts: 54.90.104.212
+  become: yes
+  tasks:
+    - name: Update apt repo and cache
+      apt:
+        update_cache: yes
+        force_apt_get: yes
+        cache_valid_time: 3600
+    - name: Install node and npm
+      apt:
+        pkg:
+          - nodejs
+          - npm
+
+- name: Create new system user for the node app
+  hosts: 54.90.104.212
+  become: yes
+  vars_files: 
+    - deploy-vars
+  tasks:
+    - name: Create system user
+      user:
+        name: "{{user_name}}"
+        comment: node system user account
+        group: admin
+      register: user_creation_result
+    - debug: msg={{user_creation_result}}
+
+- name: Deploy nodejs app
+  hosts: 54.90.104.212
+  become: True
+  become_user: "{{user_name}}"  # Switch to the 'node' user for these tasks
+  vars_files: 
+    - deploy-vars
+  tasks:
+    - name: Set permissions on "{{destination}}" directory
+      file:
+        path: "{{destination}}"
+        mode: "0755"
+    - name: Unpack the nodejs tar file
+      unarchive:
+        src: "{{location}}nodejs-app-{{version}}.tgz"    #Use variables to hold the location and version
+        dest: "{{destination}}"  # Change the destination to the home directory of the 'node' user
+    - name: Install dependencies
+      npm:
+        path: "{{destination}}/package"  # Update the path to the correct location
+    - name: Start the application
+      command: node server
+      args:
+        chdir: "{{destination}}/package/app"  # Update the path to the app folder
+      async: 1000
+      poll: 0
+      register: node_app
+    - name: Ensure App is running
+      shell: ps aux | grep node
+      register: app_status
+    - name: Debug app and print the status in stdout
+      debug:
+        msg: "{{ app_status.stdout_lines }}"

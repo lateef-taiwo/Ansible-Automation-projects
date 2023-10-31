@@ -1,0 +1,62 @@
+# ---    
+        #yaml syntax for separatinf blocks in the yaml syntax
+#       #play for nginx server. Remember that a playbook is a collection of plays
+# - name: configure nginx web server   # optional play name
+#   hosts: webserver                    # hosts, remote or on-prem
+#   become: yes                          # run as the root user, i.e with super user privileges
+
+#   tasks: # list of actions to perform on the server
+#   - name: update the server #first task 
+#     apt:   #use the apt module
+#       update_cache: yes  # with the update cache yes option
+#   - name: install nginx server  # second task to install nginx. it is a list that's why it starts with hyphen (-)
+#     apt:    #use the apt module.
+#       name: nginx   #name parameter/attribute with value nginx to install nginx
+#       state: latest   #state parameter/attribute with value latest to install the latest version of nginx
+#   - name: start nginx server  # third task to start the nginx server.
+#     service:                  # use the service module 
+#       name: nginx           # put nginx service
+#       state: started         # in a started state
+
+
+# ---    
+#yaml syntax for separatinf blocks in the yaml syntax
+      #play for nginx server. Remember that a playbook is a collection of plays
+# - name: configure nginx web server   # optional play name
+#   hosts: webserver                    # hosts, remote or on-prem
+#   become: yes                          # run as the root user, i.e with super user privileges
+
+#   tasks: # list of actions to perform on the server
+#   - name: update the server #first task 
+#     apt:   #use the apt module
+#       update_cache: yes  # with the update cache yes option
+#   - name: install nginx server  # second task to install nginx. it is a list that's why it starts with hyphen (-)
+#     apt:    #use the apt module.
+#       name: nginx=1.18.0-6ubuntu14.4   # to install a specific version of nginx or use regular expressions like this nginx=1.18*
+#       state: present   #Use present, instead of specifying latest.
+#   - name: start nginx server  # third task to start the nginx server.
+#     service:                  # use the service module 
+#       name: nginx           # put nginx service
+#       state: started         # in a started state
+
+---
+- name: configure nginx web server   # optional play name
+  hosts: webserver                    # hosts, remote or on-prem
+  become: yes                          # run as the root user, i.e with super user privileges
+
+  tasks: # list of actions to perform on the server
+  # - name: update the server #first task 
+  #   apt:   #use the apt module
+  #     update_cache: yes  # with the update cache yes option
+  - name: uninstall nginx server  # second task to install nginx. it is a list that's why it starts with hyphen (-)
+    apt:    #use the apt module.
+      name: nginx=1.18*   #name parameter/attribute with value install to install a specific version of nginx or use regular expressions like this nginx=1.18*
+      state: absent   #state parameter/attribute with value present. Use present, instead of specifying latest.
+  - name: stop nginx service  # third task to start the nginx server.
+    service:                  # use the service module 
+      name: nginx           # put nginx service
+      state: stopped         # in a started state
+
+
+      # https://docs.ansible.com/ansible/2.9/user_guide/index.html
+      # https://docs.ansible.com/ansible/2.9/modules/list_of_packaging_modules.html

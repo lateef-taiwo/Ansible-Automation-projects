@@ -1,0 +1,21 @@
+54.224.207.77 ansible_ssh_private_key_file=~/.ssh/ansible.pem ansible_user=ubuntu
+3.89.118.29 ansible_ssh_private_key_file=~/.ssh/ansible.pem ansible_user=ubuntu
+
+
+[vm]
+52.146.7.117
+172.178.90.145
+
+[vm:vars]
+ansible_ssh_private_key_file=~/.ssh/sever.pem
+ansible_user=azureuser  #include python3 interpreter to suppress interpreter warning ansible_python_interpreter=/usr/bin/python3
+
+#Add remote host ssh-keys to the ~/.ssh/known_hosts file on the locat server
+ssh-keyscan -H host-ip >> ~/.ssh/known_hosts 
+ssh-keyscan -H 3.92.56.105 >> ~/.ssh/known_hosts 
+
+#TO disable host-key checking for dynamic and ephemeral servers. 
+#Edit the default ansible config file, located in ~/.ansible.cfg, formerly located in /etc/ansible/ansible.cfg 
+[defaults]
+host_key_checking = False
+
