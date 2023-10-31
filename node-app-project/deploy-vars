@@ -1,4 +1,5 @@
 version: 1.0.0 
 location:  /home/savvytech/Documents/DevOps/TWNANA_LABS/Ansible/Ansible-Automation-projects/sample-nodejs/ 
-user_name: node
+user_name: node 
 destination: /home/{{user_name}}
+

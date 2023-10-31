@@ -17,7 +17,7 @@
 - name: Create new system user for the node app
   hosts: 54.90.104.212
   become: yes
-  vars_files: 
+  vars_files:  
     - deploy-vars
   tasks:
     - name: Create system user
