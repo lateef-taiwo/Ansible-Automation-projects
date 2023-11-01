@@ -1,16 +1,1 @@
-[ec2]
-54.224.207.77 
-3.89.118.29 
-
-[ec2:vars]
-ansible_ssh_private_key_file=~/.ssh/ansible.pem 
-ansible_user=ubuntu
-
-[vm]
-52.146.7.117
-172.178.90.145
-
-[vm:vars]
-ansible_ssh_private_key_file=~/.ssh/sever.pem
-ansible_user=azureuser
-
+54.90.104.212 ansible_ssh_private_key_file=~/.ssh/ansible.pem ansible_user=ubuntu
