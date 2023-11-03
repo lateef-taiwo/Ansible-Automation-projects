@@ -48,6 +48,7 @@
       stat:
         path: /opt/nexus
       register: stat_result
-    - debug: msg={{stat_result}}
+    - debug: msg={{stat_result.stat.exists}}  #check if the /opt/nexus directory exists
     - name: Rename nexus folder
       shell: mv {{find_result.files[0].path}}  /opt/nexus
+      when: not stat_result.stat.exists
