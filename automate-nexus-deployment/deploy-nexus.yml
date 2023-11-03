@@ -1,25 +1,53 @@
 ---
-- name: install java and net-tools
+- name: Install Java, net-tools, and Nexus
   hosts: 54.145.31.96
   become: yes
-  tasks: 
+  tasks:
     - name: Update apt repo and cache
       apt:
         update_cache: yes
         force_apt_get: yes
         cache_valid_time: 3600
-    - name: Install java version 8
-      apt: 
-        name=openjdk-8-jre-headless
+
+    - name: Install Java version 8
+      apt:
+        name: openjdk-8-jre-headless
+
     - name: Install net-tools
       apt:
-        name=net-tools
+        name: net-tools
 
-- name: Download and unpack nexus installer
+- name: Download nexus, Untar and Find folder
   hosts: 54.145.31.96
   become: yes
   tasks:
     - name: Download Nexus
-      get_url: # module to download files from the internet (from http, https or ftp servers) to the remote server. Just like using wget for windows targets, it is "win_get_url"
+      get_url:
         url: https://download.sonatype.com/nexus/3/latest-unix.tar.gz
         dest: /opt/
+      notify: Untar Nexus installer
+      register: download_result
+    #- debug: msg={{download_result}}
+
+  #handlers:
+    - name: Untar Nexus installer
+      unarchive:
+        src: "{{download_result.dest}}"      #/opt/nexus-3.61.0-02-unix.tar.gz
+        dest: /opt/
+        remote_src: yes
+
+    - name: Find nexus folder
+      find: #find module, which returns a list of files based on specific criteria
+        paths: /opt/
+        pattern: "nexus-*"
+        file_type: directory
+      register: find_result # use the register module to declare a variable to print out the result using the debug task
+    #- debug: msg={{find_result}} #print the result of the find nexus folder task.
+    
+    - name: Check if nexus folder already exists
+      stat:
+        path: /opt/nexus
+      register: stat_result
+    - debug: msg={{stat_result}}
+    - name: Rename nexus folder
+      shell: mv {{find_result.files[0].path}}  /opt/nexus
