@@ -98,3 +98,15 @@
 
 - name: Verify if nexus is running
   hosts: nexus_server
+  tasks:
+    - name: Check if nexus is running with ps command
+      shell: ps aux | grep nexus
+      register: app_status
+    - debug: msg={{app_status.stdout_lines}}
+    - name: wait for a minute
+      pause: #use the pause module to wait for a minute
+        minutes: 1
+    - name: check with netsat
+      shell: netstat -tunlp
+      register: app_status
+    - debug: msg={{app_status.stdout_lines}}
