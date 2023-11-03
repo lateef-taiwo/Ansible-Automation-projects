@@ -1,6 +1,6 @@
 ---
 - name: Install Java, net-tools, and Nexus
-  hosts: 54.145.31.96
+  hosts: nexus_server
   become: yes
   tasks:
     - name: Update apt repo and cache
@@ -18,7 +18,7 @@
         name: net-tools
 
 - name: Download nexus, Untar and Find folder
-  hosts: 54.145.31.96
+  hosts: nexus_server
   become: yes
   tasks:
     - name: Download Nexus
@@ -52,3 +52,49 @@
     - name: Rename nexus folder
       shell: mv {{find_result.files[0].path}}  /opt/nexus
       when: not stat_result.stat.exists
+
+- name: Create Nexus User to own nexus folders
+  hosts: nexus_server
+  become: yes
+  tasks:
+    - name: Create Nexus group
+      group:
+        name: nexus
+        state: present
+    - name: Create Nexus User
+      user:
+        name: nexus
+        group: nexus
+    - name: Make nexus user owner of nexus folder
+      file:
+        path: /opt/nexus
+        state: directory
+        owner: nexus
+        group: nexus
+        recurse: yes
+    - name: Make nexus user owner of nexus folder
+      file:
+        path: /opt/sonatype-work
+        state: directory
+        owner: nexus
+        group: nexus
+        recurse: yes
+
+- name: Start Nexus with nexus user
+  hosts: nexus_server
+  become: yes
+  tasks:
+    - name: Set the default user to run as nexus user
+      # blockinfile:
+      #   path: /opt/nexus/bin/nexus.rc
+      #   block: | # the pipe symbol represents a multi-line string
+      #     run_as_user="nexus"
+      lineinfile:      #use lineinfile module instead of blockinfile
+        path: /opt/nexus/bin/nexus.rc
+        regexp: '^#run_as_user=""'
+        line: run_as_user="nexus"
+    - name: Start Nexus
+      command: /opt/nexus/bin/nexus start
+
+- name: Verify if nexus is running
+  hosts: nexus_server
