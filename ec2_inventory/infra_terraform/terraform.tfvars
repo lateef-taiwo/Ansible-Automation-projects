@@ -1,0 +1,7 @@
+vpc_cidr_block= "10.0.0.0/16"
+subnet_1_cidr_block = "10.0.10.0/24"
+avail_zone = "eu-west-2a"
+env_prefix= "dev"
+instance_type= "t2.micro"
+ssh_key= "~/.ssh/server.pub"
+my_ip = "102.91.0.0/32"
