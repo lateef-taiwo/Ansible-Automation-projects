@@ -1,0 +1,46 @@
+---
+
+- name: Update, install Python, and Docker on Amazon Linux EC2
+  hosts: aws_ec2
+  become: yes
+  tasks:
+    - name: Update the package cache
+      yum:
+        name: '*'
+        state: latest
+      register: yum_update
+
+    - name: Install Python 3
+      yum:
+        name: python3
+        state: present
+
+    - name: Install required packages for Docker
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - yum-utils
+        - device-mapper-persistent-data
+        - lvm2
+
+    - name: Enable the EPEL repository using amazon-linux-extras
+      command: amazon-linux-extras enable epel
+
+    - name: Install Docker
+      package:
+        name: docker
+        state: present
+
+    - name: Start and enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: Restart Docker if needed
+      service:
+        name: docker
+        state: restarted
+      listen: yum_update

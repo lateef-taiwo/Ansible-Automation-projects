@@ -20,6 +20,7 @@ data "aws_ami" "amazon-linux-image" {
 
 resource "aws_vpc" "myapp-vpc" {
   cidr_block = var.vpc_cidr_block
+  enable_dns_hostnames = true
   tags = {
       Name = "${var.env_prefix}-vpc"
   }
@@ -28,7 +29,7 @@ resource "aws_vpc" "myapp-vpc" {
 resource "aws_subnet" "myapp-subnet-1" {
   vpc_id = aws_vpc.myapp-vpc.id
   cidr_block = var.subnet_1_cidr_block
-  availability_zone = var.avail_zone
+  availability_zone = var.availability_zone
   tags = {
       Name = "${var.env_prefix}-subnet-1"
   }
@@ -113,10 +114,10 @@ resource "aws_instance" "myapp-server-one" {
   associate_public_ip_address = true
   subnet_id                   = aws_subnet.myapp-subnet-1.id
   vpc_security_group_ids      = [aws_security_group.myapp-sg.id]
-  availability_zone			      = var.avail_zone
+  availability_zone			      = var.availability_zone
 
   tags = {
-    Name = "${var.env_prefix}-server-one"
+    Name = "${var.env_prefix}-server-1"
   }
 
 #   user_data = <<EOF
@@ -136,10 +137,10 @@ resource "aws_instance" "myapp-server-two" {
   associate_public_ip_address = true
   subnet_id                   = aws_subnet.myapp-subnet-1.id
   vpc_security_group_ids      = [aws_security_group.myapp-sg.id]
-  availability_zone			      = var.avail_zone
+  availability_zone			      = var.availability_zone
 
   tags = {
-    Name = "${var.env_prefix}-server-two"
+    Name = "${var.env_prefix}-server-2"
   }
 
 
@@ -152,17 +153,61 @@ resource "aws_instance" "myapp-server-two" {
 #               EOF
 }
 
-resource "aws_instance" "myapp-server-three" {
+resource "aws_instance" "uat-server-one" {
   ami                         = data.aws_ami.amazon-linux-image.id
   instance_type               = "t2.small"
   key_name                    = "server.pem"
   associate_public_ip_address = true
   subnet_id                   = aws_subnet.myapp-subnet-1.id
   vpc_security_group_ids      = [aws_security_group.myapp-sg.id]
-  availability_zone			      = var.avail_zone
+  availability_zone			      = var.availability_zone
 
   tags = {
-    Name = "${var.env_prefix}-server-three"
+    Name = "uat-server-1"
+  }
+
+}
+
+resource "aws_instance" "uat-server-two" {
+  ami                         = data.aws_ami.amazon-linux-image.id
+  instance_type               = "t2.small"
+  key_name                    = "server.pem"
+  associate_public_ip_address = true
+  subnet_id                   = aws_subnet.myapp-subnet-1.id
+  vpc_security_group_ids      = [aws_security_group.myapp-sg.id]
+  availability_zone			      = var.availability_zone
+
+  tags = {
+    Name = "uat-server-2"
+  }
+}
+
+resource "aws_instance" "prod-server-one" {
+  ami                         = data.aws_ami.amazon-linux-image.id
+  instance_type               = "t2.small"
+  key_name                    = "server.pem"
+  associate_public_ip_address = true
+  subnet_id                   = aws_subnet.myapp-subnet-1.id
+  vpc_security_group_ids      = [aws_security_group.myapp-sg.id]
+  availability_zone			      = var.availability_zone
+
+  tags = {
+    Name = "prod-server-1"
+  }
+
+}
+
+resource "aws_instance" "prod-server-two" {
+  ami                         = data.aws_ami.amazon-linux-image.id
+  instance_type               = "t2.medium"
+  key_name                    = "server.pem"
+  associate_public_ip_address = true
+  subnet_id                   = aws_subnet.myapp-subnet-1.id
+  vpc_security_group_ids      = [aws_security_group.myapp-sg.id]
+  availability_zone			      = var.availability_zone
+
+  tags = {
+    Name = "prod-server-2"
   }
 
 }
