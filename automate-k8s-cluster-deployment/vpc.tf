@@ -1,15 +1,15 @@
 provider "aws" {
-    region = "eu-west-2"
+    region = "us-east-1"
 }
 
 data "aws_availability_zones" "available" {}
 
 
-module "myapp-vpc" {
+module "eks-vpc" {
     source = "terraform-aws-modules/vpc/aws"
-    version = "2.64.0"
+    # version = "2.64.0"
 
-    name = "myapp-vpc"
+    name = "eks-vpc"
     cidr = var.vpc_cidr_block
     private_subnets = var.private_subnet_cidr_blocks
     public_subnets = var.public_subnet_cidr_blocks
